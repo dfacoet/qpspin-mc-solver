@@ -24,7 +24,7 @@ class SystemParameters(BaseModel):
         return np.sqrt(self.h**2 + self.gamma**2)
 
     def m(self) -> float:
-        return self.beta * self.gamma**2 / self.b**2 * math.tanh(self.beta * self.b)
+        return self.gamma / self.b * math.tanh(self.beta * self.b)
 
 
 class SimulationParameters(BaseModel):
