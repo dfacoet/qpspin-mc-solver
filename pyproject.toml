@@ -1,14 +1,28 @@
 [project]
 name = "qpspin-mc-solver"
-version = "0.1.0"
 description = "Continuous time MC solver for Quantum p-spin models"
+version = "0.1.0"
 authors = [{ name = "Davide Facoetti" }]
 readme = "README.md"
 requires-python = ">=3.13"
-dependencies = []
+dependencies = ["numpy>=2.2.3", "pydantic>=2.10.6"]
 
 [dependency-groups]
 dev = ["mypy>=1.15.0", "pytest>=8.3.4", "ruff>=0.9.6"]
+notebook = ["ipykernel>=6.29.5", "matplotlib>=3.10.0"]
 
 [tool.uv]
-default-groups = ["dev"]
+default-groups = ["dev", "notebook"]
+
+[tool.mypy]
+plugins = ["numpy.typing.mypy_plugin"]
+
+[build-system]
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/qpspin_mc"]
+
+[tool.hatch.version]
+source = "vcs"
