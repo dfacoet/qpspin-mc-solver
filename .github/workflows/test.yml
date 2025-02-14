@@ -1,0 +1,67 @@
+name: Test
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.13"]
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+        allow-prereleases: true
+    
+    - name: Install uv
+      run: |
+        curl -LsSf https://astral.sh/uv/install.sh | sh
+        echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+    
+    - name: Run tests
+      run: uv run pytest
+
+  lint:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.13"]
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+        allow-prereleases: true
+    
+    - name: Install uv
+      run: |
+        curl -LsSf https://astral.sh/uv/install.sh | sh
+        echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+    
+    - name: Run ruff format
+      run: uv run ruff format --check . src tests examples
+    
+    - name: Run ruff check
+      run: uv run ruff check . src tests examples
+    
+    - name: Run mypy
+      run: uv run mypy --install-types
+
+    - name: Check file endings
+      run: |
+        ! find . -type f -not -path '*/\.*' -print0 | xargs -0 -L1 bash -c 'test "$(tail -c 1 "$0")" && echo "No newline at end of $0"'
+
+    - name: Check notebook cleanliness
+      run: uv run nb-clean check examples/*.ipynb
