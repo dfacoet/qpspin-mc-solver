@@ -8,7 +8,12 @@ requires-python = ">=3.13"
 dependencies = ["numpy>=2.2.3", "pydantic>=2.10.6"]
 
 [dependency-groups]
-dev = ["mypy>=1.15.0", "pytest>=8.3.4", "ruff>=0.9.6"]
+dev = [
+    "mypy>=1.15.0",
+    "pre-commit>=4.1.0",
+    "pytest>=8.3.4",
+    "ruff>=0.9.6",
+]
 notebook = ["ipykernel>=6.29.5", "matplotlib>=3.10.0"]
 
 [tool.uv]
