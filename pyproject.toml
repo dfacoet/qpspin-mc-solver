@@ -1,0 +1,14 @@
+[project]
+name = "qpspin-mc-solver"
+version = "0.1.0"
+description = "Continuous time MC solver for Quantum p-spin models"
+authors = [{ name = "Davide Facoetti" }]
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = []
+
+[dependency-groups]
+dev = ["mypy>=1.15.0", "pytest>=8.3.4", "ruff>=0.9.6"]
+
+[tool.uv]
+default-groups = ["dev"]
