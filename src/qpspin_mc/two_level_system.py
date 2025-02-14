@@ -28,10 +28,14 @@ class SystemParameters(BaseModel):
 
 
 class SimulationParameters(BaseModel):
-    n_steps: int = Field(frozen=True)
     n_samples: int = Field(frozen=True)
+    n_thinning: int = Field(frozen=True)
     n_init_steps: int = Field(frozen=True)
     seed: NPSeedType = Field(frozen=True)
+
+    @property
+    def n_steps(self) -> int:
+        return self.n_samples * self.n_thinning
 
 
 class SimulationResult(BaseModel):
@@ -44,7 +48,7 @@ class SimulationResult(BaseModel):
     model_config = {"arbitrary_types_allowed": True}
 
     def acceptance_rate(self) -> float:
-        return self.accepted_steps / self.simulation_parameters.n_steps
+        return self.accepted_steps / (self.simulation_parameters.n_steps)
 
     def estimate_magnetization(self) -> tuple[float, float]:
         r = self.system_parameters.beta * self.system_parameters.gamma
@@ -87,12 +91,11 @@ class TwoLevelSystemSimulator(BaseModel):
         for _ in range(simulation_parameters.n_init_steps):
             ts, _ = self.step(ts)
 
-        sample_every = simulation_parameters.n_steps // simulation_parameters.n_samples
-        for i in range(simulation_parameters.n_steps):
-            ts, accepted = self.step(ts)
-            accepted_steps += accepted
-            if i % sample_every == 0:
-                samples.append(ts)
+        for _ in range(simulation_parameters.n_samples):
+            for _ in range(simulation_parameters.n_thinning):
+                ts, accepted = self.step(ts)
+                accepted_steps += accepted
+            samples.append(ts)
 
         self._rng = None
         return SimulationResult(
