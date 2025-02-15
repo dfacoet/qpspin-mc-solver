@@ -5,13 +5,13 @@ repos:
         name: ruff format
         entry: uv run ruff format src tests examples
         language: system
-        types: [python]
+        types_or: [python, jupyter]
         
       - id: ruff-check
         name: ruff check
         entry: uv run ruff check src tests examples
         language: system
-        types: [python]
+        types_or: [python, jupyter]
         
       - id: mypy
         name: mypy
