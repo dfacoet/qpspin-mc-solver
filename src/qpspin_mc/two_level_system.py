@@ -1,8 +1,9 @@
+import math
 from functools import cache, cached_property
 from typing import Any, Literal
+
 import numpy as np
 from pydantic import BaseModel, Field
-import math
 
 TwoLevelSystemSample = np.ndarray[Any, np.dtype[np.float64]]
 # TODO: specify that the array is one-dimensional
@@ -58,6 +59,19 @@ class SimulationResult(BaseModel):
         return m_mean, m_sem
 
 
+_P_ADD = 0.5  # Probability to propose "add"
+
+
+class InvalidProposal(Exception):
+    def __init__(self, state: Any, proposal: Any):
+        super().__init__(f"Invalid proposal: {state} {proposal}")
+
+
+class NoRNGError(Exception):
+    def __init__(self):
+        super().__init__("RNG not configured")
+
+
 class TwoLevelSystemSimulator(BaseModel):
     """Continuous imaginary time Monte Carlo simulator for
 
@@ -108,7 +122,7 @@ class TwoLevelSystemSimulator(BaseModel):
     @property
     def rng(self) -> np.random.Generator:
         if self._rng is None:
-            raise RuntimeError("RNG not configured")
+            raise NoRNGError
         return self._rng
 
     # TODO: avoid recomputing weight for the same ts
@@ -134,12 +148,12 @@ class TwoLevelSystemSimulator(BaseModel):
             case (x, "remove") if x > 0:
                 return two_l * (two_l - 1) / beta**2
             case _:
-                raise ValueError(f"Invalid proposal: {two_l} {add_or_remove}")
+                raise InvalidProposal(two_l, add_or_remove)
 
     def step(
         self, ts: TwoLevelSystemSample
     ) -> tuple[TwoLevelSystemSample, Literal[0, 1]]:
-        if len(ts) == 0 or self.rng.uniform() < 0.5:
+        if len(ts) == 0 or self.rng.uniform() < _P_ADD:
             # Propose to add two flips
             two_ts = self.rng.uniform(low=0, high=self.beta, size=2)
             new_ts = np.sort(np.concatenate((ts, two_ts)))

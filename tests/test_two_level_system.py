@@ -1,13 +1,15 @@
 import math
 
 import numpy as np
-from pydantic import ValidationError
 import pytest
+from pydantic import ValidationError
 
 from qpspin_mc.two_level_system import (
-    SystemParameters,
+    InvalidProposal,
+    NoRNGError,
     SimulationParameters,
     SimulationResult,
+    SystemParameters,
     TwoLevelSystemSimulator,
     _alternating_ones,
 )
@@ -16,7 +18,7 @@ from qpspin_mc.two_level_system import (
 class TestSystemParameters:
     def test_validate_beta(self):
         # beta must be positive
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="Input should be greater than 0"):
             SystemParameters(beta=-1.0, h=1.0, gamma=1.0)
 
     def test_b_property(self):
@@ -24,7 +26,7 @@ class TestSystemParameters:
         assert params.b == 5.0
 
     @pytest.mark.parametrize(
-        "beta,h,gamma,expected",
+        ("beta", "h", "gamma", "expected"),
         [
             (1.0, 0.0, 1.0, math.tanh(1.0)),  # pure transverse field
             (1.0, 1.0, 0.0, 0.0),  # pure longitudinal field
@@ -114,7 +116,7 @@ class TestTwoLevelSystemSimulator:
         assert simulator.proposal_ratio(1.0, 2, "remove") == 4.0
 
         # Invalid proposals should raise
-        with pytest.raises(ValueError):
+        with pytest.raises(InvalidProposal):
             simulator.proposal_ratio(1.0, 0, "remove")
 
     def test_weight(self, simulator):
@@ -129,11 +131,11 @@ class TestTwoLevelSystemSimulator:
         assert len(result.samples) == sim_params.n_samples
 
     def test_rng_not_configured(self, simulator):
-        with pytest.raises(RuntimeError):
-            simulator.rng
+        with pytest.raises(NoRNGError):
+            _ = simulator.rng
 
-    def test_step(self, simulator, sim_params):
-        simulator._rng = np.random.default_rng(42)
+    def test_step(self, simulator):
+        simulator._rng = np.random.default_rng()  # noqa: SLF001
         ts = simulator.initial()
         new_ts, accepted = simulator.step(ts)
         assert isinstance(new_ts, np.ndarray)

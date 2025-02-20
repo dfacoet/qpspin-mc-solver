@@ -23,6 +23,48 @@ default-groups = ["dev", "notebook"]
 [tool.mypy]
 plugins = ["numpy.typing.mypy_plugin"]
 
+[tool.ruff.lint]
+select = [
+    "A",
+    "B",
+    "BLE",
+    "C4",
+    "E",
+    "F",
+    "FA",
+    "FBT",
+    "FURB",
+    "I",
+    "ICN",
+    "INP",
+    "ISC",
+    "N",
+    "NPY",
+    "PERF",
+    "PIE",
+    "PL",
+    "PD",
+    "PT",
+    "PTH",
+    "PYI",
+    "Q",
+    "RET",
+    "RSE",
+    "RUF",
+    "SIM",
+    "SLF",
+    "TID",
+    "TRY",
+    "UP",
+    "W",
+    "YTT",
+]
+ignore = ["N818", "RET505"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = [
+    "PLR2004", # allow "magic numbers"
+]
 
 [build-system]
 requires = ["hatchling", "hatch-vcs"]
