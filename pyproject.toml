@@ -4,11 +4,12 @@ description = "Continuous time MC solver for Quantum p-spin models"
 version = "0.1.0"
 authors = [{ name = "Davide Facoetti" }]
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.12"
 dependencies = ["numpy>=2.2.3", "pydantic>=2.10.6"]
 
 [dependency-groups]
 dev = [
+    "asv>=0.6.4",
     "mypy>=1.15.0",
     "nb-clean>=3.2.0",
     "pre-commit>=4.1.0",
@@ -41,7 +42,7 @@ select = [
     "N",
     "NPY",
     "PERF",
-    "PIE",
+    # "PIE",  # gets stuff wrong (PIE790)
     "PL",
     "PD",
     "PT",
