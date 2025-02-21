@@ -1,0 +1,33 @@
+{
+    "version": 1,
+    "project": "qpspin-mc-solver",
+    "project_url": "https://github.com/dfacoet/qpspin-mc-solver/",
+    "repo": ".",
+    "build_command": [
+        "python -m pip install --verbose -e .",
+        "python -c 'import qpspin_mc; print(\"Package imported successfully\")'"
+    ],
+    "branches": [
+        "main"
+    ],
+    "dvcs": "git",
+    "environment_type": "virtualenv",
+    "install_timeout": 600,
+    "show_commit_url": "https://github.com/dfacoet/qpspin-mc-solver/commit/",
+    "pythons": [
+        "3.13"
+    ],
+    "matrix": {
+        "req": {
+            "numpy": [],
+            "pydantic": []
+        }
+    },
+    "benchmark_dir": "benchmarks",
+    "env_dir": ".asv/env",
+    "results_dir": ".asv/results",
+    "html_dir": ".asv/html",
+    "hash_length": 8,
+    "build_cache_size": 2,
+    "regressions_thresholds": {}
+}
