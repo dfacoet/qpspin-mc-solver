@@ -8,3 +8,12 @@ wheels/
 
 # Virtual environments
 .venv
+
+# Rust
+debug/
+target/
+
+# Caches
+.mypy_cache
+.pytest_cache
+.ruff_cache
