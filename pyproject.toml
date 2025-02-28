@@ -36,7 +36,7 @@ select = [
     "FURB",
     "I",
     "ICN",
-    "INP",
+    # "INP",
     "ISC",
     "N",
     "NPY",
