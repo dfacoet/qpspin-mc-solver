@@ -2,6 +2,12 @@ The goal of this project is to reimplement a continuous-time MC solver for impur
 
 For now, I'll play around with MCMC in Python and Rust.
 
+## Developing
+- Install [uv](https://docs.astral.sh/uv/)
+- Build with `uv run maturin develop`
+
+uv takes care of creating a virtual environment and installing the Python and Rust packages with their dependencies, including development dependencies.
+
 ## Citations
 
 Facoetti, D. (2019). Ergodicity and Localisation in Mean-Field Quantum Systems [PhD thesis, King's College London]. https://kclpure.kcl.ac.uk/portal/en/studentTheses/ergodicity-and-localisation-in-mean-field-quantum-systems
