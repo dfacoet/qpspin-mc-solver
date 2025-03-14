@@ -15,18 +15,18 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    
+
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
         allow-prereleases: true
-    
+
     - name: Install uv
       run: |
         curl -LsSf https://astral.sh/uv/install.sh | sh
         echo "$HOME/.cargo/bin" >> $GITHUB_PATH
-    
+
     - name: Run tests
       run: uv run pytest
 
@@ -38,24 +38,24 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    
+
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
         allow-prereleases: true
-    
+
     - name: Install uv
       run: |
         curl -LsSf https://astral.sh/uv/install.sh | sh
         echo "$HOME/.cargo/bin" >> $GITHUB_PATH
-    
+
     - name: Run ruff format
       run: uv run ruff format --check . src tests examples
-    
+
     - name: Run ruff check
       run: uv run ruff check . src tests examples
-    
+
     - name: Run mypy
       run: uv run mypy --install-types
 
