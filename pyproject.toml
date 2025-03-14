@@ -1,14 +1,24 @@
+[build-system]
+requires = ["maturin>=1.8,<2.0"]
+build-backend = "maturin"
+
 [project]
 name = "qpspin-mc-solver"
 description = "Continuous time MC solver for Quantum p-spin models"
-version = "0.1.0"
 authors = [{ name = "Davide Facoetti" }]
 readme = "README.md"
 requires-python = ">=3.13"
+dynamic = ["version"]
+classifiers = [
+    "Programming Language :: Rust",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",
+]
 dependencies = ["numpy>=2.2.3", "pydantic>=2.10.6"]
 
 [dependency-groups]
 dev = [
+    "maturin>=1.8.2",
     "mypy>=1.15.0",
     "nb-clean>=3.2.0",
     "pre-commit>=4.1.0",
@@ -16,6 +26,12 @@ dev = [
     "ruff>=0.9.6",
 ]
 notebook = ["ipykernel>=6.29.5", "matplotlib>=3.10.0", "pandas>=2.2.3"]
+
+[tool.maturin]
+python-packages = ["qpspin_mc"]
+features = ["pyo3/extension-module"]
+manifest-path = "rust/Cargo.toml"
+module-name = "qpspin_mc._qpspin_mc"
 
 [tool.uv]
 default-groups = ["dev", "notebook"]
@@ -63,15 +79,5 @@ ignore = ["N818", "RET505"]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = [
-    "PLR2004", # allow "magic numbers"
+    "PLR2004", # allow "magic numbers" in tests
 ]
-
-[build-system]
-requires = ["hatchling", "hatch-vcs"]
-build-backend = "hatchling.build"
-
-[tool.hatch.build.targets.wheel]
-packages = ["src/qpspin_mc"]
-
-[tool.hatch.version]
-source = "vcs"
