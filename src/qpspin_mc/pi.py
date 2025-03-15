@@ -3,6 +3,8 @@ import random
 
 import numpy as np
 
+from ._qpspin_mc import pi_mc_rust as pi_mc_rust
+
 
 def pi_mc_python(n_samples: int, seed: int) -> float:
     random.seed(seed)

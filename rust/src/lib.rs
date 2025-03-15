@@ -1,15 +1,30 @@
-use pyo3::prelude::*;
+use pyo3::{exceptions::PyValueError, prelude::*};
+use rand::{Rng, SeedableRng};
 
 #[pyfunction]
-#[allow(clippy::excessive_precision)]
-fn pi_exact_rust() -> PyResult<f64> {
-    let pi = 3.14159265358979323846; // more digits than f64 precision
-    Ok(pi)
+fn pi_mc_rust(n_samples: u64, seed: u64) -> PyResult<f64> {
+    if n_samples == 0 {
+        return Err(PyValueError::new_err("n_samples must be positive"));
+    }
+    let mut rng = rand_pcg::Pcg64::seed_from_u64(seed);
+    let mut count = 0;
+
+    for _ in 0..n_samples {
+        let x: f64 = rng.random();
+        let y: f64 = rng.random();
+
+        if x.powi(2) + y.powi(2) < 1.0 {
+            count += 1
+        }
+    }
+
+    let estimate = count as f64 / n_samples as f64 * 4.0;
+    Ok(estimate)
 }
 
 #[pymodule]
 fn _qpspin_mc(m: &Bound<'_, PyModule>) -> PyResult<()> {
-    m.add_function(wrap_pyfunction!(pi_exact_rust, m)?)?;
+    m.add_function(wrap_pyfunction!(pi_mc_rust, m)?)?;
     Ok(())
 }
 
@@ -18,8 +33,13 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_pi_exact_rust() {
-        let result = pi_exact_rust().unwrap();
-        assert_eq!(result, 3.14159265358979323846)
+    fn test_pi_mc_rust() {
+        let result = pi_mc_rust(10, 0).unwrap();
+        assert!(result >= 0.0)
+    }
+
+    #[test]
+    fn test_pi_mc_rust_zero() {
+        assert!(pi_mc_rust(0, 0).is_err());
     }
 }
