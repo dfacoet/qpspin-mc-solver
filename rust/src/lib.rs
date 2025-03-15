@@ -1,12 +1,12 @@
 use pyo3::{exceptions::PyValueError, prelude::*};
-use rand::Rng;
+use rand::{Rng, SeedableRng};
 
 #[pyfunction]
-fn pi_mc_rust(n_samples: u32, _seed: u32) -> PyResult<f64> {
+fn pi_mc_rust(n_samples: u64, seed: u64) -> PyResult<f64> {
     if n_samples == 0 {
         return Err(PyValueError::new_err("n_samples must be positive"));
     }
-    let mut rng = rand::rng();
+    let mut rng = rand_pcg::Pcg64::seed_from_u64(seed);
     let mut count = 0;
 
     for _ in 0..n_samples {
