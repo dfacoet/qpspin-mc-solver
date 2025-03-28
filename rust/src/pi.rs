@@ -1,7 +1,7 @@
 use pyo3::{exceptions::PyValueError, prelude::*};
 use rand::{Rng, SeedableRng};
 
-pub fn init_module<'py>(python: Python<'py>) -> PyResult<Bound<'py, PyModule>> {
+pub fn init_module(python: Python<'_>) -> PyResult<Bound<'_, PyModule>> {
     let pi_module = PyModule::new(python, "pi")?;
 
     pi_module.add_function(wrap_pyfunction!(pi_mc_rust, python)?)?;
