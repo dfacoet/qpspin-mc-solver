@@ -1,6 +1,20 @@
 use pyo3::{exceptions::PyValueError, prelude::*};
 use rand::{Rng, SeedableRng};
 
+pub fn init_module<'py>(python: Python<'py>) -> PyResult<Bound<'py, PyModule>> {
+    let pi_module = PyModule::new(python, "pi")?;
+
+    pi_module.add_function(wrap_pyfunction!(pi_mc_rust, python)?)?;
+    pi_module.add_function(wrap_pyfunction!(joe_test, python)?)?;
+
+    Ok(pi_module)
+}
+
+#[pyfunction]
+pub fn joe_test(n: u64) -> PyResult<u64> {
+    Ok(n)
+}
+
 #[pyfunction]
 pub fn pi_mc_rust(n_samples: u64, seed: u64) -> PyResult<f64> {
     if n_samples == 0 {
