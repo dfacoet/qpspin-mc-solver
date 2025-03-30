@@ -3,7 +3,12 @@ import random
 
 import numpy as np
 
-from ._qpspin_mc import pi_mc_rust as pi_mc_rust
+from ._qpspin_mc import pi
+
+# re-export pi_mc_rust. `from ._qpspin_mc.pi import pi_mc_rust` does not work
+# because _qpspin_mc is not a package.
+# See extended comment in rust/lib.rs
+pi_mc_rust = pi.pi_mc_rust
 
 
 def pi_mc_python(n_samples: int, seed: int) -> float:
