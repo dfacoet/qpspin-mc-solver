@@ -12,7 +12,7 @@ from qpspin_mc.two_level_system import (
     SystemParameters,
     TwoLevelSystemSimulator,
     _alternating_ones,
-    tls_does_nothing,
+    tls_function,
 )
 
 
@@ -151,5 +151,29 @@ def test_alternating_ones():
     assert _alternating_ones(4) is _alternating_ones(4)
 
 
-def test_tls_does_nothing():
-    tls_does_nothing()
+@pytest.mark.parametrize(
+    ("input_list", "expected_set", "expected_maybe_float"),
+    [
+        ([], set(), None),
+        ([11.0], set(), 11.0),
+        ([0.0, 1.0, 2.0], {0, 1, 2, 3}, None),
+        ([0.0, 10.0, 2.0], {0, 1, 2, 3}, 12.0),
+        ([7.0, 2.0, 3.0], {1, 2, 3, 7}, 12.0),
+        ([-10.0, 2.0, 3.0], {1, 2, 3, 0}, None),
+    ],
+)
+def test_tls_function(
+    input_list: list[float], expected_set: set[int], expected_maybe_float: float | None
+):
+    assert tls_function(input_list) == (expected_set, expected_maybe_float)
+
+
+@pytest.mark.parametrize(
+    ("input_list", "expected_err"),
+    [
+        (["invalid_type", 1.0], TypeError),
+    ],
+)
+def test_tls_function_error(input_list: list[float], expected_err: type[BaseException]):
+    with pytest.raises(expected_err):
+        tls_function(input_list)

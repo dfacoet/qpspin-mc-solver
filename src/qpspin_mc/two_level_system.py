@@ -7,7 +7,7 @@ from pydantic import BaseModel, Field
 
 from ._qpspin_mc import two_level_system
 
-tls_does_nothing = two_level_system.tls_test_function
+tls_function = two_level_system.tls_test_function
 
 
 TwoLevelSystemSample = np.ndarray[Any, np.dtype[np.float64]]
