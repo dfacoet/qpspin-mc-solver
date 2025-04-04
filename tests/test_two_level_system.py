@@ -12,6 +12,7 @@ from qpspin_mc.two_level_system import (
     SystemParameters,
     TwoLevelSystemSimulator,
     _alternating_ones,
+    tls_does_nothing,
 )
 
 
@@ -148,3 +149,7 @@ def test_alternating_ones():
 
     # Test caching
     assert _alternating_ones(4) is _alternating_ones(4)
+
+
+def test_tls_does_nothing():
+    tls_does_nothing()

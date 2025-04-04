@@ -5,6 +5,11 @@ from typing import Any, Literal
 import numpy as np
 from pydantic import BaseModel, Field
 
+from ._qpspin_mc import two_level_system
+
+tls_does_nothing = two_level_system.tls_test_function
+
+
 TwoLevelSystemSample = np.ndarray[Any, np.dtype[np.float64]]
 # TODO: specify that the array is one-dimensional
 # e.g. with np.ndarray[tuple[int], ...]
