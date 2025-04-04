@@ -19,7 +19,7 @@ dependencies = ["numpy>=2.2.3", "pydantic>=2.10.6"]
 [dependency-groups]
 dev = [
     "maturin>=1.8.2",
-    "mypy>=1.15.0",
+    "mypy[install-types]>=1.15.0",
     "nb-clean>=3.2.0",
     "pre-commit>=4.1.0",
     "pytest>=8.3.4",

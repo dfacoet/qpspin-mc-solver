@@ -57,7 +57,7 @@ jobs:
       run: uv run ruff check . src tests examples
 
     - name: Run mypy
-      run: uv run mypy --install-types
+      run: uv run mypy --install-types --non-interactive .
 
     - name: Check file endings
       run: |
