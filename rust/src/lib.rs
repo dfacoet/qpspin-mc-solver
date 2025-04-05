@@ -17,6 +17,9 @@ mod _qpspin_mc {
     pub mod two_level_system {
         #[pymodule_export]
         use crate::two_level_system::tls_test_function;
+
+        #[pymodule_export]
+        use crate::two_level_system::run_mc;
     }
 }
 
