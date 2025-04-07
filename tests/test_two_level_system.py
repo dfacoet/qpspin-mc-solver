@@ -126,8 +126,9 @@ class TestTwoLevelSystemSimulator:
         assert isinstance(w, float)
         assert w > 0
 
-    def test_run_mc(self, simulator, sim_params):
-        result = simulator.run_mc(sim_params)
+    @pytest.mark.parametrize("backend", ["python", "rust"])
+    def test_run_mc(self, backend, simulator, sim_params):
+        result = simulator.run_mc(sim_params, backend)
         assert isinstance(result, SimulationResult)
         assert len(result.samples) == sim_params.n_samples
 

@@ -26,7 +26,7 @@ pub fn run_mc(
     gamma: f64,
     h: f64,
     beta: f64,
-    n_init_samples: u64,
+    n_init_steps: u64,
     n_samples: u64,
     n_thinning: u64,
     seed: u64,
@@ -36,7 +36,7 @@ pub fn run_mc(
     let mut n_accepted = 0;
     let mut state = TwoLevelSystemSample::new();
 
-    for _ in 0..n_init_samples {
+    for _ in 0..n_init_steps {
         (state, _) = step(&state, gamma, h, beta, &mut rng);
     }
 
@@ -76,9 +76,12 @@ fn step(
         new_ts.sort_by(|a, b| a.partial_cmp(b).unwrap());
         proposal_ratio(beta, state.len(), MoveType::Add)
     } else {
-        let indices = (0..state.len()).choose_multiple(rng, 2);
-        for i in indices.iter().rev() {
-            new_ts.remove(*i);
+        // Remove two times from the state (uniform random)
+        for _ in 0..2 {
+            let index = (0..new_ts.len())
+                .choose(rng)
+                .expect("Trying to remove times from an empty state");
+            new_ts.remove(index);
         }
         proposal_ratio(beta, state.len(), MoveType::Remove)
     };
@@ -100,11 +103,10 @@ fn proposal_ratio(beta: f64, two_l: usize, move_type: MoveType) -> f64 {
 }
 
 fn compute_weight(state: &TwoLevelSystemSample, gamma: f64, h: f64, beta: f64) -> f64 {
-    // TODO: compute weight
     let alternating_sum: f64 = state
         .iter()
         .enumerate()
-        .map(|(k, t)| *t * ((2 * (k % 2) - 1) as f64))
+        .map(|(k, t)| *t * ((2 * (k % 2)) as f64 - 1.0))
         .sum();
 
     2.0 * gamma.powi(state.len() as i32) * (h * (beta + 2.0 * alternating_sum)).cosh()
