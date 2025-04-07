@@ -5,6 +5,11 @@ from typing import Any, Literal
 import numpy as np
 from pydantic import BaseModel, Field
 
+from ._qpspin_mc import two_level_system
+
+tls_function = two_level_system.tls_test_function
+
+
 TwoLevelSystemSample = np.ndarray[Any, np.dtype[np.float64]]
 # TODO: specify that the array is one-dimensional
 # e.g. with np.ndarray[tuple[int], ...]
@@ -95,7 +100,22 @@ class TwoLevelSystemSimulator(BaseModel):
     def gamma(self) -> float:
         return self.system_parameters.gamma
 
-    def run_mc(self, simulation_parameters: SimulationParameters) -> SimulationResult:
+    def run_mc(
+        self,
+        simulation_parameters: SimulationParameters,
+        backend: Literal["python", "rust"],
+    ) -> SimulationResult:
+        match backend:
+            case "python":
+                return self._run_mc_py(simulation_parameters)
+            case "rust":
+                return self._run_mc_rust(simulation_parameters)
+            case _:
+                raise ValueError(f"Invalid backend {backend}")
+
+    def _run_mc_py(
+        self, simulation_parameters: SimulationParameters
+    ) -> SimulationResult:
         self._rng = np.random.default_rng(simulation_parameters.seed)
 
         samples = []
@@ -115,6 +135,32 @@ class TwoLevelSystemSimulator(BaseModel):
         return SimulationResult(
             samples=samples,
             accepted_steps=accepted_steps,
+            system_parameters=self.system_parameters,
+            simulation_parameters=simulation_parameters,
+        )
+
+    def _run_mc_rust(
+        self, simulation_parameters: SimulationParameters
+    ) -> SimulationResult:
+        if isinstance(simulation_parameters.seed, int):
+            seed = simulation_parameters.seed
+        else:
+            [seed] = np.random.SeedSequence(simulation_parameters.seed).generate_state(
+                1
+            )
+
+        samples, n_accepted = two_level_system.run_mc(
+            self.gamma,
+            self.h,
+            self.beta,
+            simulation_parameters.n_init_steps,
+            simulation_parameters.n_samples,
+            simulation_parameters.n_thinning,
+            seed,
+        )
+        return SimulationResult(
+            samples=[np.array(x) for x in samples],
+            accepted_steps=n_accepted,
             system_parameters=self.system_parameters,
             simulation_parameters=simulation_parameters,
         )

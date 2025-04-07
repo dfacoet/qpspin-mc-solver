@@ -1,4 +1,5 @@
 mod pi;
+mod two_level_system;
 
 use pyo3::prelude::*;
 
@@ -10,6 +11,15 @@ mod _qpspin_mc {
     pub mod pi {
         #[pymodule_export]
         use crate::pi::pi_mc_rust;
+    }
+
+    #[pymodule]
+    pub mod two_level_system {
+        #[pymodule_export]
+        use crate::two_level_system::tls_test_function;
+
+        #[pymodule_export]
+        use crate::two_level_system::run_mc;
     }
 }
 

@@ -12,6 +12,7 @@ from qpspin_mc.two_level_system import (
     SystemParameters,
     TwoLevelSystemSimulator,
     _alternating_ones,
+    tls_function,
 )
 
 
@@ -125,8 +126,9 @@ class TestTwoLevelSystemSimulator:
         assert isinstance(w, float)
         assert w > 0
 
-    def test_run_mc(self, simulator, sim_params):
-        result = simulator.run_mc(sim_params)
+    @pytest.mark.parametrize("backend", ["python", "rust"])
+    def test_run_mc(self, backend, simulator, sim_params):
+        result = simulator.run_mc(sim_params, backend)
         assert isinstance(result, SimulationResult)
         assert len(result.samples) == sim_params.n_samples
 
@@ -148,3 +150,31 @@ def test_alternating_ones():
 
     # Test caching
     assert _alternating_ones(4) is _alternating_ones(4)
+
+
+@pytest.mark.parametrize(
+    ("input_list", "expected_set", "expected_maybe_float"),
+    [
+        ([], set(), None),
+        ([11.0], set(), 11.0),
+        ([0.0, 1.0, 2.0], {0, 1, 2, 3}, None),
+        ([0.0, 10.0, 2.0], {0, 1, 2, 3}, 12.0),
+        ([7.0, 2.0, 3.0], {1, 2, 3, 7}, 12.0),
+        ([-10.0, 2.0, 3.0], {1, 2, 3, 0}, None),
+    ],
+)
+def test_tls_function(
+    input_list: list[float], expected_set: set[int], expected_maybe_float: float | None
+):
+    assert tls_function(input_list) == (expected_set, expected_maybe_float)
+
+
+@pytest.mark.parametrize(
+    ("input_list", "expected_err"),
+    [
+        (["invalid_type", 1.0], TypeError),
+    ],
+)
+def test_tls_function_error(input_list: list[float], expected_err: type[BaseException]):
+    with pytest.raises(expected_err):
+        tls_function(input_list)
