@@ -14,7 +14,10 @@ classifiers = [
     "Programming Language :: Python :: Implementation :: CPython",
     "Programming Language :: Python :: Implementation :: PyPy",
 ]
-dependencies = ["numpy>=2.2.3", "pydantic>=2.10.6"]
+dependencies = [
+    "numpy>=2.2.3",
+    "pydantic>=2.10.6",
+]
 
 [dependency-groups]
 dev = [
@@ -24,6 +27,7 @@ dev = [
     "pre-commit>=4.1.0",
     "pytest>=8.3.4",
     "ruff>=0.9.6",
+    "ty>=0.0.1a11",
 ]
 notebook = ["ipykernel>=6.29.5", "matplotlib>=3.10.0", "pandas>=2.2.3"]
 
