@@ -37,7 +37,10 @@ pub fn run_mc(
     let mut state = TwoLevelSystemSample::new();
 
     for _ in 0..n_init_steps {
-        (state, _) = step(&state, gamma, h, beta, &mut rng);
+        let (new_state, acc) = step(&state, gamma, h, beta, &mut rng);
+        if acc {
+            state = new_state;
+        }
     }
 
     for _ in 0..n_samples {
@@ -103,13 +106,17 @@ fn proposal_ratio(beta: f64, two_l: usize, move_type: MoveType) -> f64 {
 }
 
 fn compute_weight(state: &TwoLevelSystemSample, gamma: f64, h: f64, beta: f64) -> f64 {
+    if state.is_empty() {
+        return 2.0 * (beta * h).cosh();
+    }
+    // - state[0] + state[1] - state[2] + state[3] - ...
     let alternating_sum: f64 = state
         .iter()
         .enumerate()
         .map(|(k, t)| *t * ((2 * (k % 2)) as f64 - 1.0))
         .sum();
 
-    2.0 * gamma.powi(state.len() as i32) * (h * (beta + 2.0 * alternating_sum)).cosh()
+    2.0 * gamma.powi(state.len() as i32) * (h * (beta - 2.0 * alternating_sum)).cosh()
 }
 
 #[cfg(test)]
