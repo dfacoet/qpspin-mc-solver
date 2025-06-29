@@ -70,7 +70,7 @@ select = [
     "SIM",
     "SLF",
     "TID",
-    "TRY",
+    # "TRY",
     "UP",
     "W",
     "YTT",
